@@ -1,20 +1,28 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialIcons } from "@expo/vector-icons";
 // Import Screens
 
-import TimelineScreen from "../screens/TimelineScreen";
-import ProfileStackNavigator from "./ProfileStackNavigator";
 import { View } from "react-native";
+import { useTheme } from "../themes/provider";
+import ProfileStackNavigator from "./ProfileStackNavigator";
+import TimelineStackNavigator from "./TimelineStackNavigator";
+import PlanStackNavigator from "./PlanStackNavigator";
 
 const Tab = createBottomTabNavigator();
 
+const Placeholder = () => <View style={{ flex: 1 }}></View>;
+
 const TabNavigator = () => {
+  const { theme } = useTheme();
   return (
-    <Tab.Navigator initialRouteName="Timeline">
+    <Tab.Navigator
+      initialRouteName="Timeline"
+      tabBarOptions={{ activeTintColor: theme.AccentBackgroundColor }}
+    >
       <Tab.Screen
         name="Timeline"
-        component={TimelineScreen}
+        component={TimelineStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="home" size={size} color={color} />
@@ -23,7 +31,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="New Post"
-        component={() => <View style={{ flex: 1 }}></View>}
+        component={Placeholder}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="add-circle" size={size} color={color} />
@@ -35,6 +43,15 @@ const TabNavigator = () => {
             navigation.navigate("AddPost");
           },
         })}
+      />
+      <Tab.Screen
+        name="Plan"
+        component={PlanStackNavigator}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="show-chart" size={size} color={color} />
+          ),
+        }}
       />
       <Tab.Screen
         name="Profile"
