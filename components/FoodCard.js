@@ -39,7 +39,6 @@ const getStyles = (theme, dimensions) => {
     imageContainer: {
       width: Math.min(640, dimensions.window.width),
       height: Math.min(dimensions.window.width, 640) * 0.75,
-      resizeMode: "contain",
       flexDirection: "row",
       justifyContent: "flex-end",
       alignItems: "flex-start",

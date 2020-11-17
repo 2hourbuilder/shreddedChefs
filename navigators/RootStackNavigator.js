@@ -36,7 +36,12 @@ const RootStackNavigator = () => {
     return null;
   }
   return (
-    <View style={{ flexDirection: "row", justifyContent: "center" }}>
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "center",
+      }}
+    >
       <View
         style={{
           width: (dimensions.window.width - contentWidth) / 2,

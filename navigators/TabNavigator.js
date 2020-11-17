@@ -7,7 +7,7 @@ import { View } from "react-native";
 import { useTheme } from "../themes/provider";
 import ProfileStackNavigator from "./ProfileStackNavigator";
 import TimelineStackNavigator from "./TimelineStackNavigator";
-import PlanStackNavigator from "./PlanStackNavigator";
+import GoalsModalNavigator from "./GoalsModalNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -45,8 +45,8 @@ const TabNavigator = () => {
         })}
       />
       <Tab.Screen
-        name="Plan"
-        component={PlanStackNavigator}
+        name="Goals"
+        component={GoalsModalNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="show-chart" size={size} color={color} />

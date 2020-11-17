@@ -1,11 +1,12 @@
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Button } from "react-native";
 import { VictoryChart, VictoryLine, VictoryAxis } from "victory-native";
 import SectionHeader from "../../components/SectionHeader";
 import { useTheme } from "../../themes/provider";
 
-const PostScreen = () => {
+const GoalsOverviewScreen = ({ navigation }) => {
   const { theme } = useTheme();
+
   return (
     <View style={styles.container}>
       <SectionHeader headerText="Weight" />
@@ -55,11 +56,15 @@ const PostScreen = () => {
         />
       </VictoryChart>
       <Text>Plan</Text>
+      <Button
+        title="New Goal"
+        onPress={() => navigation.navigate("New Goal")}
+      />
     </View>
   );
 };
 
-export default PostScreen;
+export default GoalsOverviewScreen;
 
 const styles = StyleSheet.create({
   container: {
