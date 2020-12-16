@@ -30,7 +30,7 @@ const getStyles = (theme) => {
     text: {
       color: theme.PrimaryTextColor,
       fontSize: 16,
-      fontWeight: "300",
+      fontWeight: "600",
     },
   });
   return styles;

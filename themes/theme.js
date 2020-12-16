@@ -1,5 +1,14 @@
-import { ThemeColors as ReactNavigationThemeColors } from "react-navigation";
 import { DefaultTheme, DarkTheme } from "@react-navigation/native";
+
+const classificationColors = {
+  veryBad: "#f56a79",
+  bad: "#F1948A",
+  average: "#F9E79F",
+  good: "#ABEBC6",
+  veryGood: "#2ec1ac",
+  steroids: "#7FB3D5",
+};
+
 export const ThemeColors = {
   PrimaryTextColor: {
     light: "black",
@@ -44,6 +53,10 @@ export const ThemeColors = {
   Navigation: {
     light: { ...DefaultTheme },
     dark: { ...DarkTheme },
+  },
+  StatsClassifications: {
+    light: classificationColors,
+    dark: classificationColors,
   },
 };
 

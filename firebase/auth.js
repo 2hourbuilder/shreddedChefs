@@ -113,6 +113,22 @@ export const doRemovePushNotificationsToken = async (token) => {
   }
 };
 
+export const doSetPersonalData = async (height, gender) => {
+  try {
+    await firestore
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .set(
+        {
+          personalData: { height: height, gender: gender },
+        },
+        { merge: true }
+      );
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 export const signOut = (snapshotListeners) => {
   snapshotListeners.forEach((listener) => {
     listener();

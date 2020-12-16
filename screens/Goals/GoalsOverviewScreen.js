@@ -1,75 +1,73 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
-import { VictoryChart, VictoryLine, VictoryAxis } from "victory-native";
-import SectionHeader from "../../components/SectionHeader";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import GoalCard from "../../components/GoalCard";
+import { auth, firestore } from "../../firebase/general";
 import { useTheme } from "../../themes/provider";
 
 const GoalsOverviewScreen = ({ navigation }) => {
   const { theme } = useTheme();
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const ref = firestore
+      .collection("users")
+      .doc("9UOpiHSFFZUVu3Xqy59WIPK4Zpq2");
+    let listener = () => {};
+    const setListener = async () => {
+      listener = ref.onSnapshot(
+        function (snapshot) {
+          setData(snapshot.data().goals);
+        },
+        function (error) {
+          alert(error);
+        }
+      );
+    };
+    try {
+      setListener();
+    } catch (error) {
+      throw new Error(error);
+    }
+    return () => listener();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <SectionHeader headerText="Weight" />
-      <VictoryChart>
-        <VictoryAxis
+    <KeyboardAwareScrollView contentContainerStyle={{ alignItems: "center" }}>
+      {data != undefined ? (
+        data.map((goal) => {
+          return (
+            <GoalCard
+              key={goal.id}
+              goalId={goal.id}
+              startDate={goal.startDate}
+              startValue={goal.startValue}
+              endDate={goal.targetDate}
+              endValue={goal.targetValue}
+              statId={goal.statId}
+              title={goal.title}
+            />
+          );
+        })
+      ) : (
+        <Text
           style={{
-            axis: { stroke: theme.ChartsColorAxis },
-            tickLabels: { fill: theme.PrimaryTextColor },
-            grid: { stroke: theme.PrimaryBorderColor },
+            color: theme.SecondaryTextColor,
+            width: "80%",
+            textAlign: "center",
+            marginTop: 20,
+            fontSize: 16,
           }}
-          tickFormat={(t) =>
-            new Date(t).toLocaleDateString("de-DE", {
-              day: "numeric",
-              month: "numeric",
-            })
-          }
-          tickCount={4}
-        />
-        <VictoryAxis
-          dependentAxis
-          style={{
-            axis: { stroke: theme.ChartsColorAxis },
-            tickLabels: { fill: theme.PrimaryTextColor },
-            grid: { stroke: theme.PrimaryBorderColor },
-          }}
-        />
-        <VictoryLine
-          data={[
-            { x: 1602494594622, y: 85 },
-            { x: 1603271408644, y: 86 },
-            { x: 1603644945702, y: 85.4 },
-            { x: 1603844945702, y: 85.4 },
-            { x: 1604044945702, y: 85.4 },
-          ]}
-          animate={{
-            duration: 1000,
-            onLoad: { duration: 1000 },
-          }}
-          height={300}
-          interpolation="catmullRom"
-          style={{
-            data: {
-              stroke: theme.AccentBackgroundColor,
-            },
-          }}
-          domainPadding={{ y: 10 }}
-        />
-      </VictoryChart>
-      <Text>Plan</Text>
-      <Button
-        title="New Goal"
-        onPress={() => navigation.navigate("New Goal")}
-      />
-    </View>
+          lineBreakMode="tail"
+        >
+          It looks like you haven't added any goals yet. Press the + Button in
+          the upper right corner to get started!
+        </Text>
+      )}
+    </KeyboardAwareScrollView>
   );
 };
 
 export default GoalsOverviewScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-});
+const styles = StyleSheet.create({});

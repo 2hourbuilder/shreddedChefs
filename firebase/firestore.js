@@ -1,4 +1,4 @@
-import { firebase, firestore } from "./general";
+import { auth, firebase, firestore } from "./general";
 import { createId } from "../helpers/helpers";
 import { doSendPushNotificationNewPost } from "../helpers/pushNotifications";
 
@@ -76,6 +76,62 @@ export const toggleLike = async (postID, user, remove) => {
           .update({
             likes: firebase.firestore.FieldValue.arrayUnion(user.displayName),
           });
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export const addGoal = async (
+  title,
+  typeId,
+  statId,
+  startDate,
+  targetDate,
+  startValue,
+  targetValue
+) => {
+  try {
+    const goalId = await createId();
+    await firestore
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .set(
+        {
+          goals: firebase.firestore.FieldValue.arrayUnion({
+            id: goalId,
+            title: title,
+            typeId: typeId,
+            statId: statId,
+            startDate: startDate,
+            targetDate: targetDate,
+            startValue: startValue,
+            targetValue: targetValue,
+          }),
+        },
+        {
+          merge: true,
+        }
+      );
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export const deleteGoalById = async (deleteId) => {
+  try {
+    const oldGoals = await firestore
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .get();
+    const newGoals = oldGoals
+      .data()
+      .goals.filter((goal) => goal.id != deleteId);
+    await firestore.collection("users").doc(auth.currentUser.uid).set(
+      {
+        goals: newGoals,
+      },
+      { merge: true }
+    );
   } catch (err) {
     throw new Error(err);
   }
