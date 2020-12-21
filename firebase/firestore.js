@@ -91,27 +91,29 @@ export const addGoal = async (
   targetValue
 ) => {
   try {
-    const goalId = await createId();
+    const progressDataId = await createId();
     await firestore
       .collection("users")
       .doc(auth.currentUser.uid)
-      .set(
-        {
-          goals: firebase.firestore.FieldValue.arrayUnion({
-            id: goalId,
-            title: title,
-            typeId: typeId,
-            statId: statId,
-            startDate: startDate,
-            targetDate: targetDate,
-            startValue: startValue,
-            targetValue: targetValue,
-          }),
+      .collection("goals")
+      .add({
+        title: title,
+        typeId: typeId,
+        statId: statId,
+        startDate: startDate,
+        targetDate: targetDate,
+        startValue: startValue,
+        targetValue: targetValue,
+        settings: {
+          showChartCategories: false,
+          showChartBounds: false,
         },
-        {
-          merge: true,
-        }
-      );
+        progressData: firebase.firestore.FieldValue.arrayUnion({
+          id: progressDataId,
+          dataDate: startDate,
+          value: startValue,
+        }),
+      });
   } catch (err) {
     throw new Error(err);
   }
@@ -119,20 +121,79 @@ export const addGoal = async (
 
 export const deleteGoalById = async (deleteId) => {
   try {
-    const oldGoals = await firestore
+    await firestore
       .collection("users")
       .doc(auth.currentUser.uid)
-      .get();
-    const newGoals = oldGoals
-      .data()
-      .goals.filter((goal) => goal.id != deleteId);
-    await firestore.collection("users").doc(auth.currentUser.uid).set(
-      {
-        goals: newGoals,
-      },
-      { merge: true }
-    );
+      .collection("goals")
+      .doc(deleteId)
+      .delete();
   } catch (err) {
     throw new Error(err);
+  }
+};
+
+export const addProgressData = async (goalId, progressDataObj) => {
+  try {
+    const progressDataId = await createId();
+    await firestore
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .collection("goals")
+      .doc(goalId)
+      .update({
+        progressData: firebase.firestore.FieldValue.arrayUnion({
+          id: progressDataId,
+          ...progressDataObj,
+        }),
+      });
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export const deleteProgressData = async (goalId, progressDataId) => {
+  try {
+    const ref = firestore
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .collection("goals")
+      .doc(goalId);
+    const oldProgress = await ref.get();
+    const newProgress = oldProgress
+      .data()
+      .progressData.filter((entry) => entry.id != progressDataId);
+    await ref.set(
+      {
+        progressData: newProgress,
+      },
+      {
+        merge: true,
+      }
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const changeGoalSettings = async (
+  goalId,
+  showChartBounds,
+  showChartCategories
+) => {
+  try {
+    const newSettings = {
+      showChartCategories: showChartCategories,
+      showChartBounds: showChartBounds,
+    };
+    const ref = firestore
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .collection("goals")
+      .doc(goalId);
+    await ref.update({
+      settings: newSettings,
+    });
+  } catch (error) {
+    throw new Error(error);
   }
 };

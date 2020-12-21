@@ -18,6 +18,8 @@ const GoalChart = ({
   startValue,
   endValue,
   actualData,
+  showChartCategories = false,
+  showChartBounds = false,
 }) => {
   const { theme } = useTheme();
   const domainMax = Math.max(startValue, endValue) * 1.15;
@@ -63,66 +65,71 @@ const GoalChart = ({
           }}
           tickFormat={(t) => Math.floor(t)}
         />
-        {stats
-          .find((stat) => stat.id === statId)
-          .classifications(height, male)
-          .map((item, index) => (
-            <VictoryArea
-              key={item.name}
-              style={{ data: { fill: item.color, opacity: 0.5 } }}
-              data={[
-                {
-                  x: startDate,
-                  y: Math.min(item.max, domainMax),
-                  y0: Math.max(item.min, domainMin),
-                },
-                {
-                  x: endDate,
-                  y: Math.min(item.max, domainMax),
-                  y0: Math.max(item.min, domainMin),
-                },
-              ]}
-            />
-          ))}
-
-        <VictoryLine
-          key="upper"
-          data={[
-            { x: startDate, y: startValue },
-            { x: endDate, y: endValue * 1.1 },
-          ]}
-          animate={{
-            duration: 1000,
-            onLoad: { duration: 1000 },
-          }}
-          interpolation="natural"
-          style={{
-            data: {
-              stroke: "#aaa",
-              strokeWidth: 1,
-              strokeDasharray: 2,
-            },
-          }}
-        />
-        <VictoryLine
-          key="lower"
-          data={[
-            { x: startDate, y: startValue },
-            { x: endDate, y: endValue * 0.9 },
-          ]}
-          animate={{
-            duration: 1000,
-            onLoad: { duration: 1000 },
-          }}
-          interpolation="natural"
-          style={{
-            data: {
-              stroke: "#aaa",
-              strokeWidth: 1,
-              strokeDasharray: 2,
-            },
-          }}
-        />
+        {showChartCategories
+          ? stats
+              .find((stat) => stat.id === statId)
+              .classifications(height, male)
+              .map((item, index) => (
+                <VictoryArea
+                  key={item.name}
+                  style={{ data: { fill: item.color, opacity: 0.5 } }}
+                  data={[
+                    {
+                      x: startDate,
+                      y: Math.min(item.max, domainMax),
+                      y0: Math.max(item.min, domainMin),
+                    },
+                    {
+                      x: endDate,
+                      y: Math.min(item.max, domainMax),
+                      y0: Math.max(item.min, domainMin),
+                    },
+                  ]}
+                />
+              ))
+          : null}
+        {showChartBounds ? (
+          <VictoryLine
+            key="upper"
+            data={[
+              { x: startDate, y: startValue },
+              { x: endDate, y: endValue * 1.1 },
+            ]}
+            animate={{
+              duration: 100,
+              onLoad: { duration: 100 },
+            }}
+            interpolation="natural"
+            style={{
+              data: {
+                stroke: "#aaa",
+                strokeWidth: 1,
+                strokeDasharray: 2,
+              },
+            }}
+          />
+        ) : null}
+        {showChartBounds ? (
+          <VictoryLine
+            key="lower"
+            data={[
+              { x: startDate, y: startValue },
+              { x: endDate, y: endValue * 0.9 },
+            ]}
+            animate={{
+              duration: 100,
+              onLoad: { duration: 100 },
+            }}
+            interpolation="natural"
+            style={{
+              data: {
+                stroke: "#aaa",
+                strokeWidth: 1,
+                strokeDasharray: 2,
+              },
+            }}
+          />
+        ) : null}
         <VictoryLine
           key="journey"
           data={[
@@ -130,8 +137,8 @@ const GoalChart = ({
             { x: endDate, y: endValue },
           ]}
           animate={{
-            duration: 1000,
-            onLoad: { duration: 1000 },
+            duration: 100,
+            onLoad: { duration: 100 },
           }}
           interpolation="natural"
           style={{
@@ -142,6 +149,25 @@ const GoalChart = ({
             },
           }}
         />
+        {actualData != undefined ? (
+          <VictoryLine
+            key="actual"
+            data={actualData}
+            animate={{
+              duration: 100,
+              onLoad: { duration: 1000 },
+            }}
+            interpolation="natural"
+            style={{
+              data: {
+                stroke: showChartCategories
+                  ? "black"
+                  : theme.AccentBackgroundColor,
+                strokeWidth: 3,
+              },
+            }}
+          />
+        ) : null}
       </VictoryChart>
     </View>
   );

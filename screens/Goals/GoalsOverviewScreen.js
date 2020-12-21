@@ -1,23 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import { Text, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import GoalCard from "../../components/GoalCard";
 import { auth, firestore } from "../../firebase/general";
 import { useTheme } from "../../themes/provider";
 
-const GoalsOverviewScreen = ({ navigation }) => {
+const GoalsOverviewScreen = () => {
   const { theme } = useTheme();
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const ref = firestore
       .collection("users")
-      .doc("9UOpiHSFFZUVu3Xqy59WIPK4Zpq2");
+      .doc(auth.currentUser.uid)
+      .collection("goals");
     let listener = () => {};
     const setListener = async () => {
       listener = ref.onSnapshot(
         function (snapshot) {
-          setData(snapshot.data().goals);
+          setData(
+            snapshot.docs.map((doc) => {
+              return {
+                id: doc.id,
+                ...doc.data(),
+              };
+            })
+          );
         },
         function (error) {
           alert(error);
@@ -34,7 +42,7 @@ const GoalsOverviewScreen = ({ navigation }) => {
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={{ alignItems: "center" }}>
-      {data != undefined ? (
+      {data != undefined && data != [] ? (
         data.map((goal) => {
           return (
             <GoalCard
