@@ -143,7 +143,7 @@ const GoalChart = ({
           interpolation="natural"
           style={{
             data: {
-              stroke: "#fff",
+              stroke: theme.ShadowColor,
               strokeWidth: 1,
               strokeDasharray: 5,
             },

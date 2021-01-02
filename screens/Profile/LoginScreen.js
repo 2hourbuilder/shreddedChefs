@@ -40,8 +40,10 @@ const LoginScreen = ({ navigation }) => {
         onSubmit={async (values, actions) => {
           try {
             await doSignInWithEmailAndPassword(values.email, values.password);
-            actions.resetForm();
-            navigation.navigate("Home");
+            setTimeout(() => {
+              actions.resetForm();
+              navigation.navigate("Home");
+            }, 500);
           } catch (error) {
             console.log(error);
           }

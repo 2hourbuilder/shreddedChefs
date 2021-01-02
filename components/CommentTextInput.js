@@ -36,7 +36,7 @@ const CommentTextInput = ({ postID, user, setAddComment }) => {
 
   return (
     <View style={styles.commentRow}>
-      <Text style={styles.commentAuthor}>{user.displayName}</Text>
+      <Text style={styles.commentAuthor}>{user ? user.displayName : null}</Text>
       <TextInput
         style={styles.commentText}
         value={value}

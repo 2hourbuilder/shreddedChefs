@@ -50,7 +50,9 @@ const RegistrationScreen = ({ navigation }) => {
               values.password
             );
             actions.resetForm();
-            navigation.navigate("Home");
+            setTimeout(() => {
+              navigation.navigate("Home");
+            }, 500);
           } catch (error) {
             console.log(error);
           }

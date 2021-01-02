@@ -287,4 +287,14 @@ export const stats = [
           ];
     },
   },
+  {
+    id: "5",
+    name: "Measurement",
+    longName: "Body Measurements",
+    description:
+      "Add a single body measurements as a goal, ie: Chest, Upper arm, Quadriceps, Calf, Waist... Only one measurement per goal to keep focus!",
+    classifications: function (height = 1.75, male = true) {
+      return null;
+    },
+  },
 ];

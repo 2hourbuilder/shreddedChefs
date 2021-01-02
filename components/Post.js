@@ -9,6 +9,7 @@ import CommentTextInput from "./CommentTextInput";
 import WorkoutCard from "./WorkoutCard";
 import FoodCard from "./FoodCard";
 import { toggleLike } from "../firebase/firestore";
+import GoalChart from "./GoalChart";
 
 const Post = ({ item }) => {
   const { theme } = useTheme();
@@ -34,6 +35,10 @@ const Post = ({ item }) => {
         year: "numeric",
       });
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <View>
@@ -70,15 +75,43 @@ const Post = ({ item }) => {
           ) : (
             <Text style={styles.postBodyText}>{item.text}</Text>
           )
-        ) : item.details != undefined ? (
-          <FoodCard
-            imageURL={item.details.imageURL}
-            foodId={item.details.foodId}
-            text={item.text}
-          />
-        ) : (
-          <Text style={styles.postBodyText}>{item.text}</Text>
-        )}
+        ) : null}
+        {item.type === "Food" ? (
+          item.details != undefined ? (
+            <FoodCard
+              imageURL={item.details.imageURL}
+              foodId={item.details.foodId}
+              text={item.text}
+            />
+          ) : (
+            <Text style={styles.postBodyText}>{item.text}</Text>
+          )
+        ) : null}
+        {item.type === "Progress" ? (
+          item.details != undefined ? (
+            <View style={{ paddingHorizontal: 8 }}>
+              <GoalChart
+                actualData={item.details.progressData.map((d) => ({
+                  x: d.dataDate,
+                  y: d.value,
+                }))}
+                endDate={item.details.targetDate}
+                endValue={item.details.targetValue}
+                height={item.details.height}
+                male={item.details.gender === "m" ? true : false}
+                startDate={item.details.startDate}
+                startValue={item.details.startValue}
+                statId={item.details.statId}
+                key={item.details.id}
+                showChartBounds={item.details.settings.showChartBounds}
+                showChartCategories={item.details.settings.showChartCategories}
+              />
+              <Text style={styles.postBodyText}>{item.text}</Text>
+            </View>
+          ) : (
+            <Text style={styles.postBodyText}>{item.text}</Text>
+          )
+        ) : null}
       </View>
       <View style={styles.footerContainer}>
         <TouchableOpacity

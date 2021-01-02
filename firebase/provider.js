@@ -23,13 +23,15 @@ const UserProvider = (props) => {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((userAuth) => {
-      if (userAuth) {
-        console.log("Auth happened, user:", userAuth.displayName);
-        setUser(userAuth);
-      } else {
-        setUser(null);
-      }
-      setAuthReady(true);
+      setTimeout(() => {
+        if (userAuth) {
+          console.log("Auth happened, user:", userAuth.displayName);
+          setUser(userAuth);
+        } else {
+          setUser(null);
+        }
+        setAuthReady(true);
+      }, 400);
     });
     return unsubscribe;
   }, []);

@@ -120,6 +120,8 @@ const NewGoalScreen = (props) => {
             heightSquared +
             6.3 * (1.8 - parseInt(height) / 100)
         );
+      case "5":
+        return parseFloat(weight.replace(",", "."));
       default:
         break;
     }
@@ -255,7 +257,7 @@ const NewGoalScreen = (props) => {
             </>
           ) : null}
 
-          {selectedStat != "2" ? (
+          {selectedStat != "2" && selectedStat != "5" ? (
             <View style={styles.detailsContainer}>
               <Text style={styles.detailsLabel}>Current weight</Text>
               <TextInput
@@ -267,6 +269,29 @@ const NewGoalScreen = (props) => {
                   setWeight(text);
                   setWeightValid(
                     parseFloat(text.replace(",", ".")) > 40 &&
+                      parseFloat(text.replace(",", ".")) < 200
+                  );
+                }}
+                keyboardType="numeric"
+                returnKeyType="next"
+              />
+              <View style={styles.detailsValue}>
+                <ValidationCircle validationExpression={weightValid} />
+              </View>
+            </View>
+          ) : null}
+          {selectedStat === "5" ? (
+            <View style={styles.detailsContainer}>
+              <Text style={styles.detailsLabel}>Current measurement</Text>
+              <TextInput
+                style={styles.detailsValue}
+                value={weight}
+                placeholder="cm"
+                placeholderTextColor={theme.PrimaryBorderColor}
+                onChangeText={(text) => {
+                  setWeight(text);
+                  setWeightValid(
+                    parseFloat(text.replace(",", ".")) > 1 &&
                       parseFloat(text.replace(",", ".")) < 200
                   );
                 }}
@@ -362,7 +387,10 @@ const NewGoalScreen = (props) => {
       {heightValid &&
       genderValid &&
       (weightValid || selectedStat === "2") &&
-      (bodyFatValid || selectedStat === "1" || selectedStat === "3") &&
+      (bodyFatValid ||
+        selectedStat === "1" ||
+        selectedStat === "3" ||
+        selectedStat === "5") &&
       startDateValid &&
       endDateValid &&
       targetValid ? (
@@ -388,7 +416,13 @@ const NewGoalScreen = (props) => {
             <ActivityIndicator />
           ) : (
             <TouchableOpacity style={styles.button} onPress={submitHandler}>
-              <Text style={{ ...styles.text, fontWeight: "600" }}>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontWeight: "600",
+                  textAlign: "center",
+                }}
+              >
                 Save goal
               </Text>
             </TouchableOpacity>
@@ -485,7 +519,13 @@ const getStyles = (theme) => {
       color: theme.AccentBackgroundColor,
       fontSize: 16,
       fontWeight: "600",
-      padding: 8,
+      marginHorizontal: 8,
+      paddingVertical: 8,
+      paddingHorizontal: 2,
+      backgroundColor: theme.SecondaryBackgroundColor,
+      borderRadius: 4,
+      borderBottomColor: theme.ShadowColor,
+      borderBottomWidth: StyleSheet.hairlineWidth,
     },
   });
   return styles;

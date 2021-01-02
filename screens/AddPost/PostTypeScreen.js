@@ -8,7 +8,7 @@ import {
   Button,
   ImageBackground,
 } from "react-native";
-import { IMG_WORKOUT, IMG_FOOD } from "../../assets/images";
+import { IMG_WORKOUT, IMG_FOOD, IMG_PROGRESS } from "../../assets/images";
 import { useTheme } from "../../themes/provider";
 
 const PostTypeScreen = ({ navigation }) => {
@@ -38,6 +38,17 @@ const PostTypeScreen = ({ navigation }) => {
           <Text style={styles.caption}>FOOD</Text>
         </ImageBackground>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={[
+          styles.imageContainer,
+          mode === "light" ? styles.cardShadows : null,
+        ]}
+        onPress={() => navigation.navigate("Progress")}
+      >
+        <ImageBackground style={styles.image} source={IMG_PROGRESS}>
+          <Text style={styles.caption}>PROGRESS</Text>
+        </ImageBackground>
+      </TouchableOpacity>
       <Button
         title="Cancel"
         color={theme.DangerColor}
@@ -57,7 +68,7 @@ const getStyles = (theme) => {
       alignItems: "center",
     },
     imageContainer: {
-      height: 200,
+      height: 150,
       width: "100%",
       margin: 0,
     },

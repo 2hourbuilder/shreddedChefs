@@ -9,6 +9,7 @@ import {
   FlatList,
   Button,
   Switch,
+  Platform,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useProfile } from "../firebase/provider";
@@ -118,6 +119,8 @@ const GoalCard = ({
             heightSquared +
             6.3 * (1.8 - parseInt(profile.personalData.height) / 100)
         );
+      case "5":
+        return parseFloat(weight.replace(",", "."));
       default:
         break;
     }
@@ -182,7 +185,7 @@ const GoalCard = ({
             width: 54,
             paddingTop: 14,
             paddingBottom: 5,
-            paddingLeft: 5,
+            paddingLeft: 20,
           }}
           onPress={() => {
             setShowGoalActions((prevState) => !prevState);
@@ -239,7 +242,7 @@ const GoalCard = ({
               <ValidationCircle validationExpression={dataDateValid} />
             </View>
           </View>
-          {statId != "2" ? (
+          {statId != "2" && statId != "5" ? (
             <View style={styles.detailsContainer}>
               <Text style={styles.detailsLabel}>Weight</Text>
               <TextInput
@@ -251,6 +254,29 @@ const GoalCard = ({
                   setWeight(text);
                   setWeightValid(
                     parseFloat(text.replace(",", ".")) > 40 &&
+                      parseFloat(text.replace(",", ".")) < 200
+                  );
+                }}
+                keyboardType="numeric"
+                returnKeyType="next"
+              />
+              <View style={styles.detailsValue}>
+                <ValidationCircle validationExpression={weightValid} />
+              </View>
+            </View>
+          ) : null}
+          {statId === "5" ? (
+            <View style={styles.detailsContainer}>
+              <Text style={styles.detailsLabel}>Measurement</Text>
+              <TextInput
+                style={styles.detailsValue}
+                value={weight}
+                placeholder="cm"
+                placeholderTextColor={theme.PrimaryBorderColor}
+                onChangeText={(text) => {
+                  setWeight(text);
+                  setWeightValid(
+                    parseFloat(text.replace(",", ".")) > 0 &&
                       parseFloat(text.replace(",", ".")) < 200
                   );
                 }}
@@ -291,7 +317,10 @@ const GoalCard = ({
               backgroundColor:
                 dataDateValid &&
                 (weightValid || statId === "2") &&
-                (bodyFatValid || statId === "1" || statId === "3")
+                (bodyFatValid ||
+                  statId === "1" ||
+                  statId === "3" ||
+                  statId === "5")
                   ? theme.AccentBackgroundColor
                   : theme.PrimaryBorderColor,
             }}
@@ -333,20 +362,22 @@ const GoalCard = ({
               }
             />
           ) : null}
-          <View style={styles.detailsContainer}>
-            <Text style={styles.detailsLabel}>Show chart categories</Text>
-            <Switch
-              onValueChange={() =>
-                changeSettings(showChartBounds, !showChartCategories)
-              }
-              value={showChartCategories}
-              ios_backgroundColor={theme.SecondaryBackgroundColor}
-              trackColor={{
-                true: theme.AccentBackgroundColor,
-                false: theme.SecondaryBackgroundColor,
-              }}
-            />
-          </View>
+          {statId != "5" ? (
+            <View style={styles.detailsContainer}>
+              <Text style={styles.detailsLabel}>Show chart categories</Text>
+              <Switch
+                onValueChange={() =>
+                  changeSettings(showChartBounds, !showChartCategories)
+                }
+                value={showChartCategories}
+                ios_backgroundColor={theme.SecondaryBackgroundColor}
+                trackColor={{
+                  true: theme.AccentBackgroundColor,
+                  false: theme.SecondaryBackgroundColor,
+                }}
+              />
+            </View>
+          ) : null}
           <View style={styles.detailsContainer}>
             <Text style={styles.detailsLabel}>Show upper and lower bounds</Text>
             <Switch
@@ -364,16 +395,21 @@ const GoalCard = ({
 
           <TouchableOpacity
             style={styles.deleteButton}
-            onPress={() =>
-              Alert.alert(
-                "Delete goal",
-                "Do you really want to delete this goal?",
-                [
-                  { text: "No way!", style: "cancel" },
-                  { text: "Yes", onPress: () => deleteGoalById(goalId) },
-                ]
-              )
-            }
+            onPress={() => {
+              if (Platform.OS === "web") {
+                const r = confirm("Do you really want to delete this goal?");
+                r ? deleteGoalById(goalId) : null;
+              } else {
+                Alert.alert(
+                  "Delete goal",
+                  "Do you really want to delete this goal?",
+                  [
+                    { text: "No way!", style: "cancel" },
+                    { text: "Yes", onPress: () => deleteGoalById(goalId) },
+                  ]
+                );
+              }
+            }}
           >
             <MaterialIcons name="delete" color="white" size={18} />
             <Text
@@ -410,7 +446,7 @@ const getStyles = (theme, mode) => {
       shadowRadius: 3,
       alignItems: "center",
       justifyContent: "center",
-      marginTop: 20,
+      marginVertical: 10,
     },
     header: {
       fontSize: 18,
