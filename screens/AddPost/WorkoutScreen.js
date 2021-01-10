@@ -4,10 +4,7 @@ import {
   StyleSheet,
   TextInput,
   Button,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
-  ScrollView,
 } from "react-native";
 import { useTheme } from "../../themes/provider";
 import { useProfile } from "../../firebase/provider";
@@ -26,8 +23,6 @@ const WorkoutScreen = ({ navigation }) => {
   const [text, setText] = useState("");
   const [duration, setDuration] = useState("45");
   const [selectedSportId, setSelectedSportId] = useState(null);
-  const [hasImage, setHasImage] = useState(false);
-  const [imageIsLoading, setImageIsLoading] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const scrollViewRef = useRef(null);
   const sliderRef = useRef(null);
@@ -35,8 +30,9 @@ const WorkoutScreen = ({ navigation }) => {
   const onSubmitHandler = async () => {
     try {
       setIsPosting(true);
+      const thumbnailURL = profile.thumbnail ? profile.thumbnail : "";
       await addPost(
-        profile.thumbnail,
+        thumbnailURL,
         user.displayName,
         user.uid,
         "Workout",

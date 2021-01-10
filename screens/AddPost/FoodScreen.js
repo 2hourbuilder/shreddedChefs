@@ -42,8 +42,9 @@ const FoodScreen = ({ navigation }) => {
   const onSubmitHandler = async () => {
     try {
       setIsPosting(true);
+      const thumbnailURL = profile.thumbnail ? profile.thumbnail : "";
       await addPost(
-        profile.thumbnail,
+        thumbnailURL,
         user.displayName,
         user.uid,
         "Food",

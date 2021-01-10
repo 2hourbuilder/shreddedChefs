@@ -3,7 +3,7 @@ import { createId } from "../helpers/helpers";
 import { doSendPushNotificationNewPost } from "../helpers/pushNotifications";
 
 export const addPost = async (
-  thumbnailURI,
+  thumbnailURI = "",
   username,
   uid,
   type,
@@ -25,6 +25,14 @@ export const addPost = async (
     // await doSendPushNotificationNewPost(uid, username);
   } catch (err) {
     throw new Error(err);
+  }
+};
+
+export const deletePostById = async (postId) => {
+  try {
+    await firestore.collection("posts").doc(postId).delete();
+  } catch (error) {
+    throw new Error(error);
   }
 };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -26,6 +26,7 @@ const LoginScreen = ({ navigation }) => {
     email: "",
     password: "",
   };
+  const [loginError, setLoginError] = useState("");
 
   return (
     <KeyboardAvoidingView
@@ -46,6 +47,7 @@ const LoginScreen = ({ navigation }) => {
             }, 500);
           } catch (error) {
             console.log(error);
+            setLoginError(error.message);
           }
         }}
         validationSchema={validationSchema}
@@ -80,6 +82,7 @@ const LoginScreen = ({ navigation }) => {
                 </TouchableOpacity>
               )}
             </View>
+            <Text style={{ color: "red" }}>{loginError}</Text>
             <View style={styles.footer}>
               <Text style={styles.footerText}>Don't have an account yet? </Text>
               <Text

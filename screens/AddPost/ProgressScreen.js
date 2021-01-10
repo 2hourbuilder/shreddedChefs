@@ -29,8 +29,9 @@ const ProgressScreen = ({ navigation }) => {
   const onSubmitHandler = async () => {
     try {
       setIsPosting(true);
+      const thumbnailURL = profile.thumbnail ? profile.thumbnail : "";
       await addPost(
-        profile.thumbnail,
+        thumbnailURL,
         user.displayName,
         user.uid,
         "Progress",
@@ -79,7 +80,6 @@ const ProgressScreen = ({ navigation }) => {
                   id={goal.id}
                   key={goal.id}
                   onPressHandler={(id) => {
-                    console.log(goal);
                     setSelectedGoalId(id);
                     setGoal(goals.find((el) => el.id === goal.id));
                   }}

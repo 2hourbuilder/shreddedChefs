@@ -29,7 +29,7 @@ export const doSignInWithEmailAndPassword = async (email, password) => {
   try {
     await auth.signInWithEmailAndPassword(email, password);
   } catch (error) {
-    throw new Error("Login Error:", error);
+    throw new Error(error);
   }
 };
 
@@ -67,7 +67,6 @@ export const doGetPreferredTheme = async (user) => {
       .doc(user.uid)
       .get();
     result = querySnapshot.data();
-    console.log(user, result);
     return result.settings.preferredTheme;
   } catch (error) {
     throw new Error("Error in loading theme settings:" + error);

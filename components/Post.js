@@ -1,21 +1,28 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, ImageBackground } from "react-native";
+import React, { useState, useRef } from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { IMG_NO_PROFILE_PICTURE } from "../assets/images";
 import { useTheme } from "../themes/provider";
-import { FontAwesome } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { useProfile } from "../firebase/provider";
 import CommentTextInput from "./CommentTextInput";
 import WorkoutCard from "./WorkoutCard";
 import FoodCard from "./FoodCard";
-import { toggleLike } from "../firebase/firestore";
+import { deletePostById, toggleLike } from "../firebase/firestore";
 import GoalChart from "./GoalChart";
 
 const Post = ({ item }) => {
-  const { theme } = useTheme();
+  const { theme, dimensions } = useTheme();
   const styles = getStyles(theme);
   const [addComment, setAddComment] = useState(false);
   const { user } = useProfile();
+  const OptionDropdown = useRef(null);
+  const [showDropDown, setShowDropDown] = useState(false);
+  const [dropDownPosition, setDropDownPosition] = useState(null);
 
   const timeAgo = (timestamp) => {
     const timeDiffSeconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -36,18 +43,63 @@ const Post = ({ item }) => {
       });
   };
 
+  const onPressHandler = async () => {
+    try {
+      setShowDropDown(false);
+      await deletePostById(item.id);
+    } catch (error) {
+      alert("Server error");
+    }
+  };
+
   if (!user) {
     return null;
   }
 
   return (
     <View>
+      {showDropDown ? (
+        <View
+          style={{
+            position: "absolute",
+            right: 26,
+            top: 45,
+            zIndex: 1,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              width: 160,
+              height: 48,
+              backgroundColor: theme.SecondaryBackgroundColor,
+              opacity: 0.9,
+              borderTopLeftRadius: 8,
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8,
+              borderColor: theme.PrimaryBorderColor,
+              borderWidth: 1,
+              overflow: "hidden",
+              alignItems: "center",
+              paddingHorizontal: 8,
+            }}
+            onPress={onPressHandler}
+          >
+            <MaterialIcons name="delete" size={18} color={theme.DangerColor} />
+            <Text
+              style={{ color: theme.DangerColor, fontSize: 16, marginLeft: 6 }}
+            >
+              Delete post
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
       <View style={styles.postHeader}>
         <TouchableOpacity style={styles.profilePictureContainer}>
           <Image
             style={styles.profilePicture}
             source={
-              item.thumbnailURI === undefined
+              item.thumbnailURI === "" || item.thumbnailURI === undefined
                 ? IMG_NO_PROFILE_PICTURE
                 : { uri: item.thumbnailURI }
             }
@@ -63,6 +115,34 @@ const Post = ({ item }) => {
             </Text>
           </View>
         </View>
+        {item.createdBy === user.uid ? (
+          <View ref={OptionDropdown}>
+            <TouchableOpacity
+              style={{
+                paddingVertical: 3,
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                width: 30,
+              }}
+              onPress={() => {
+                OptionDropdown.current.measureInWindow(
+                  (x, y, width, height) => {
+                    setDropDownPosition({ x: x, y: y });
+                    setShowDropDown((prevState) => !prevState);
+                    console.log(showDropDown, dropDownPosition);
+                  }
+                );
+              }}
+            >
+              <MaterialCommunityIcons
+                name="dots-vertical"
+                size={24}
+                color={theme.PrimaryTextColor}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : null}
       </View>
       <View style={styles.postBody}>
         {item.type === "Workout" ? (
